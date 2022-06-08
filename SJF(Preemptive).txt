@@ -1,0 +1,163 @@
+#include <stdio.h>
+#include<stdlib.h>
+#include<limits.h>
+struct Process {
+  int id;
+  int bursttime;
+  int arrivaltime;
+  int finished;
+  int waitingtime;
+  int turaroundtime;
+  int remtime;
+  int completiontime;
+};
+void swap(int* xp, int* yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+void selectionSort(int arr[], int n)
+{
+    int i, j, min_idx;
+ 
+    // One by one move boundary of unsorted subarray
+    for (i = 0; i < n - 1; i++) {
+ 
+        // Find the minimum element in unsorted array
+        min_idx = i;
+        for (j = i + 1; j < n; j++)
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+ 
+        // Swap the found minimum element
+        // with the first element
+        swap(&arr[min_idx], &arr[i]);
+    }
+}
+int main()
+{
+    printf("SJF - (SHORTEST JOB FIRST) - PREEMPTIVE\n");
+    int num,bt,at,check=0;
+    struct Process *p;
+    printf("Enter Total No.of Process :- ");
+    scanf("%d",&num);
+    p = (struct Process*)malloc(num*sizeof(struct Process));
+    printf("%d process getting created with id's 1 to %d \n",num,num);
+    
+    for(int i=0;i<num;i+=1)
+    {
+        p[i].id=i+1;
+        p[i].finished=0;
+        // USER ENTERING DETAILS OF ALL PROCESS'S BURST TIME
+        while(check==0)
+        {
+           check=1;
+           printf("Enter Burst Time For Process - %d :- ",p[i].id);
+           scanf("%d",&bt); 
+           if(p[i].bursttime<0)
+           {
+               printf("Burst Time Should Not be Negative\n");
+               check=0;
+           }
+           else if(p[i].bursttime>10)
+           {
+               printf("Please enter below 10\n");
+               check=0;
+           }
+        }
+            // USER ENTERING DETAILS OF ALL PROCESS'S ARRIVAL TIME
+        while(check==1)
+        {
+            check=0;
+            printf("Enter Arrival Time Time For Process - %d :- ",p[i].id);
+            scanf("%d",&at);
+            if(p[i].arrivaltime<0)
+            {
+                printf("Arrival Time Should Not be Negative\n");
+                check=1;
+            }
+        }
+        
+        p[i].bursttime=bt;
+        p[i].arrivaltime=at;
+        p[i].remtime=bt;
+        
+    }
+
+// tym -> Variable to keep track of present time 
+// finished -> To see no.of finished jobs currently
+    int tym=0,finished=0,tot_burst=0;
+    for(int i=0;i<num;i++)
+    {
+     tot_burst+=p[i].bursttime;   
+    }
+    // Creating rem time array
+    int remtime_all[num];
+    
+    // Do until total tym becomes sum of all burst times(so that loop runs for every sec)
+    while(tym<tot_burst)
+    {
+        for(int i=0;i<num;i++)
+        {
+            remtime_all[i]=p[i].remtime;
+        }
+        // Here i should order shortest process of order
+        selectionSort(remtime_all,num);
+        
+        for(int i=0;i<num;i++)
+        {
+            for(int j=0;j<num;j++)
+            {
+                if(p[j].arrivaltime==0 && tym==0 && p[j].remtime==remtime_all[i])
+                {
+                    p[j].remtime-=1; //Targeting the first process (fcfs) with arrival tym 0
+                    tym+=1;
+                    if(p[j].remtime==0)
+                    {
+                        p[j].finished=1;
+                        p[j].completiontime=tym;
+                    }
+                    goto skid;
+                }
+                if(p[j].remtime==remtime_all[i] && tym>=p[j].arrivaltime && p[j].finished==0)
+                {
+                    p[j].remtime-=1;
+                    tym+=1;
+                    if(p[j].remtime==0)
+                    {
+                        p[j].finished=1;
+                        p[j].completiontime=tym;
+                    }
+                    goto skid;
+                }
+            }
+        }
+        skid:;
+    }
+    for(int i=0;i<num;i++)
+    {
+        p[i].turaroundtime=p[i].completiontime-p[i].arrivaltime;
+        p[i].waitingtime=p[i].turaroundtime-p[i].bursttime;
+    }
+    printf("----------------------------------------------------------------------------------\n");
+    printf("| %12s | %12s | %12s | %18s | %12s |\n","PROCESS ID","BURST TIME","ARRIVAL TIME","TURN AROUND TIME","WAITING TIME");
+    printf("----------------------------------------------------------------------------------\n");
+    for(int i=0;i<num;i+=1)
+    {
+       printf("| %12d | %12d | %12d | %18d | %12d |\n",p[i].id,p[i].bursttime,p[i].arrivaltime,p[i].turaroundtime,p[i].waitingtime);
+    }
+    printf("----------------------------------------------------------------------------------\n");
+    
+    float avg_wait=0,avg_turn=0;
+    for(int i=0;i<num;i+=1)
+    {
+       avg_wait=avg_wait+p[i].waitingtime;
+       avg_turn=avg_turn+p[i].turaroundtime;
+    }
+    avg_wait=avg_wait/num;
+    avg_turn=avg_turn/num;
+    printf("Average Waiting Time :- %.2f\n",avg_wait);
+    printf("Average Turn Around Time :- %.2f",avg_turn);
+    return 0;
+}
