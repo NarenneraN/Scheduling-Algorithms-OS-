@@ -1,4 +1,4 @@
-<h1>Banker's Algorithm Output For Safety :-</h1>
+<h1>Banker's Algorithm Output For Safety :-<\h1>
 5
 3
 Enter Max Instance of Resources for Process-0 for the Resource-A :  7
