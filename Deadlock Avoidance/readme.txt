@@ -1,4 +1,4 @@
-<h1>Banker's Algorithm Output For Safety :-<\h1>
+Banker's Algorithm Output For Safety :-
 5
 3
 Enter Max Instance of Resources for Process-0 for the Resource-A :  7
@@ -63,8 +63,7 @@ Process - 2
 
 
 
-<h1>Banker's Algorithm For Request :-</h1>
-/tmp/CLf1fIienV.o
+Banker's Algorithm For Request :-
 5
 4
 Enter Max Instance of Resources for Process-0 for the Resource-A :  4
